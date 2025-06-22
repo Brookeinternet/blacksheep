@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Blacknose Sheep Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light gray background */
+            line-height: 1.6;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Hide sections by default, JavaScript will manage visibility */
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .forum-thread-item:hover, .pm-item:hover {
+            background-color: #ecfdf5; /* Light emerald for hover */
+            cursor: pointer;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .paywall-overlay {
+            background-color: rgba(255, 255, 255, 0.9);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* To stack elements vertically */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10;
+        }
+        .fade-out {
+            /* To create a faded effect over the hidden content */
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            position: relative; /* Needed for absolute positioning of overlay */
+            height: 400px; /* Limit height to show fade */
+            overflow: hidden; /* Hide overflow */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+    <header class="bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg py-6 md:py-8 rounded-b-lg">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-2 md:mb-0 text-center md:text-left">
+                The Blacknose Sheep Blog
+            </h1>
+            <nav class="mt-4 md:mt-0">
+                <ul class="flex space-x-6">
+                    <li><a href="#" onclick="showPage('home-page-content'); return false;" class="text-white hover:text-emerald-100 transition duration-300 font-medium text-lg rounded-md px-3 py-1">Home</a></li>
+                    <li><a href="#" onclick="showPage('blog-page-content'); return false;" class="text-white hover:text-emerald-100 transition duration-300 font-medium text-lg rounded-md px-3 py-1">Blog</a></li>
+                    <li><a href="#" onclick="showPage('forum-page'); return false;" class="text-white hover:text-emerald-100 transition duration-300 font-medium text-lg rounded-md px-3 py-1">Forum</a></li>
+                    <li><a href="#contact" class="text-white hover:text-emerald-100 transition duration-300 font-medium text-lg rounded-md px-3 py-1">Contact</a></li>
+                    <li><a href="https://buy.stripe.com/9B66oHeqAf0h7E531P" target="_blank" class="bg-white text-emerald-700 px-5 py-2 rounded-full shadow-md hover:bg-emerald-100 transition duration-300 font-bold text-lg" id="subscribe-header-btn">Subscribe!</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <div id="home-page-content" class="content-section active">
+            <section id="unveiling-charms-intro" class="bg-white shadow-xl rounded-lg overflow-hidden mb-12 transform hover:scale-105 transition-transform duration-300 ease-in-out">
+                <img src="https://i.imgur.com/EQG0jYI.jpeg" alt="Blacknose Sheep in lush green Irish landscape" class="w-full h-64 md:h-96 object-cover rounded-t-lg">
+                <div class="p-6 md:p-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-emerald-700 mb-4">Welcome to The Blacknose Sheep Blog!</h2>
+                    <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+                        Welcome to the definitive source for everything about Blacknose Sheep in the Emerald Isle! Here at 'The Blacknose Sheep Blog', we delve deep into the world of these incredibly distinctive and endearing creatures, exploring their history, characteristics, and their growing presence in the picturesque landscapes of Ireland.
+                    </p>
+                    <p class="text-gray-700 text-lg leading-relaxed">
+                        Often hailed as the "cutest sheep in the world," the Valais Blacknose sheep, with their striking black faces, ears, and knees contrasted against their fluffy white coats, are truly a sight to behold. Originally from the Valais region of Switzerland, these gentle giants are captivating hearts across the globe, and Ireland is no exception. Explore our latest articles and join our community!
+                    </p>
+                </div>
+            </section>
+
+            <section id="table-of-contents" class="bg-white shadow-xl rounded-lg p-6 md:p-8 mb-12 transform hover:scale-105 transition-transform duration-300 ease-in-out">
+                <h3 class="text-2xl md:text-3xl font-bold text-emerald-700 mb-4">Featured Blog Posts</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li><a href="#" onclick="showPage('blog-page-content', 'unveiling-charms'); return false;" class="text-emerald-600 hover:underline">Unveiling the Charms of Irish Blacknose Sheep</a></li>
+                    <li><a href="#" onclick="showPage('blog-page-content', 'curious-red-ball-article'); return false;" class="text-emerald-600 hover:underline">Blacknose Sheep and the Curious Red Ball</a></li>
+                    <li><a href="#" onclick="showPage('blog-page-content', 'sheep-tongue-blog'); return false;" class="text-emerald-600 hover:underline">The Hilarious Tongue-Out Sheep! Unveiling Quirky Blacknose Habits</a></li>
+                </ul>
+                <p class="text-gray-700 mt-4">For more articles, visit our <a href="#" onclick="showPage('blog-page-content'); return false;" class="text-emerald-600 font-semibold hover:underline">Blog Page</a>.</p>
+            </section>
+
+            <aside class="bg-gradient-to-br from-emerald-100 to-green-50 p-6 md:p-8 rounded-lg shadow-md flex flex-col justify-between transform hover:translate-y-[-5px] transition-transform duration-300 ease-in-out">
+                <div>
+                    <h3 class="text-2xl font-bold text-emerald-800 mb-4 text-center">Join Our Exclusive Community!</h3>
+                    <p class="text-gray-700 mb-6 text-center leading-relaxed">
+                        Ready to dive deeper into the world of Blacknose Sheep? Unlock premium content, expert insights, and connect with a passionate community.
+                    </p>
+                    <div class="mb-6">
+                        <h4 class="text-xl font-semibold text-emerald-700 mb-2">Membership Benefits:</h4>
+                        <ul class="list-none space-y-2 text-gray-600">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Exclusive Articles</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>High-Res Photo & Video</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Community Forum</li>
+                        </ul>
+                    </div>
+                    <button onclick="activateSubscription();" class="block bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-center text-xl shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 mt-4">
+                        Activate Demo Subscription
+                    </button>
+                    <a href="https://buy.stripe.com/9B66oHeqAf0h7E531P" target="_blank" class="block bg-emerald-600 text-white font-bold py-3 px-6 rounded-full text-center text-xl shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105 mt-4">
+                        Subscribe Now for $11.51/month!
+                    </a>
+                </aside>
+            </section>
+        </div> <div id="blog-page-content" class="content-section">
+            <section class="bg-white shadow-xl rounded-lg p-6 md:p-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-emerald-700 mb-6">Our Latest Blog Posts</h2>
+
+                <article id="unveiling-charms" class="bg-white p-6 md:p-8 rounded-lg shadow-md mb-8 border border-gray-100 relative overflow-hidden">
+                    <h3 class="text-2xl md:text-3xl font-semibold text-emerald-600 mb-4">Unveiling the Charms of Irish Blacknose Sheep</h3>
+                    <div class="preview-content">
+                        <img src="https://i.imgur.com/EQG0jYI.jpeg" alt="Blacknose Sheep in lush green Irish landscape" class="w-full h-48 md:h-64 object-cover rounded-lg my-6">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Welcome to the definitive source for everything about Blacknose Sheep in the Emerald Isle! Here at 'The Blacknose Sheep Blog', we delve deep into the world of these incredibly distinctive and endearing creatures, exploring their history, characteristics, and their growing presence in the picturesque landscapes of Ireland. Often hailed as the "cutest sheep in the world," the Valais Blacknose sheep...
+                        </p>
+                    </div>
+                    <div class="full-content hidden">
+                        <img src="https://i.imgur.com/EQG0jYI.jpeg" alt="Blacknose Sheep in lush green Irish landscape" class="w-full h-64 md:h-96 object-cover rounded-lg my-6">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Welcome to the definitive source for everything about Blacknose Sheep in the Emerald Isle! Here at 'The Blacknose Sheep Blog', we delve deep into the world of these incredibly distinctive and endearing creatures, exploring their history, characteristics, and their growing presence in the picturesque landscapes of Ireland.
+                        </p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Often hailed as the "cutest sheep in the world," the Valais Blacknose sheep, with their striking black faces, ears, and knees contrasted against their fluffy white coats, are truly a sight to behold. Originally from the Valais region of Switzerland, these gentle giants are captivating hearts across the globe, and Ireland is no exception. This blog offers exclusive insights, stunning photography, and in-depth articles that you won't find anywhere else.
+                        </p>
+                         <p class="text-gray-700 mb-4 leading-relaxed">
+                            The Valais Blacknose sheep are an ancient breed, known for their robust nature, impressive size, and docile temperament. For centuries, they have thrived in the harsh mountain conditions of Switzerland, developing their unique characteristics. In recent years, a growing number of breeders in Ireland have recognized the appeal and potential of these sheep, importing them to establish flocks that are now flourishing in the green Irish pastures.
+                        </p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Their adaptation to the Irish climate has been remarkable. The lush grazing and temperate weather provide an ideal environment for these sheep to thrive, producing high-quality wool and becoming beloved members of countless farms.
+                        </p>
+                    </div>
+                    <div class="paywall-message absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center p-4 text-center rounded-lg shadow-inner border border-gray-200">
+                        <h4 class="text-2xl font-bold text-emerald-800 mb-4">Subscribe to Read More!</h4>
+                        <p class="text-gray-700 mb-6">Unlock this full article and exclusive content by becoming a subscriber to The Blacknose Sheep Blog.</p>
+                        <a href="https://buy.stripe.com/9B66oHeqAf0h7E531P" target="_blank" class="block bg-emerald-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105">
+                            Subscribe Now for $11.51/month!
+                        </a>
+                        <button onclick="activateSubscription();" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition duration-300">
+                            Activate Demo Subscription
+                        </button>
+                    </div>
+                </article>
+
+                <article id="curious-red-ball-article" class="bg-white p-6 md:p-8 rounded-lg shadow-md mb-8 border border-gray-100 relative overflow-hidden">
+                    <h3 class="text-2xl md:text-3xl font-semibold text-emerald-600 mb-4">Blacknose Sheep and the Curious Red Ball: A Tale of Playfulness in the Pastures</h3>
+                    <div class="preview-content">
+                        <img src="https://i.imgur.com/sou1iTX.jpeg" alt="Blacknose Sheep with a Red Ball" class="w-full h-48 md:h-64 object-cover rounded-lg my-6">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            In the serene, rolling hills of County Kerry, a story unfolded that captivated not just the local farming community, but animal lovers across the internet. It began with a simple, bright red ball – a forgotten toy from a farmer's child, perhaps – and a curious, fluffy Blacknose lamb named Finn...
+                        </p>
+                    </div>
+                    <div class="full-content hidden">
+                        <img src="https://i.imgur.com/sou1iTX.jpeg" alt="Blacknose Sheep with a Red Ball" class="w-full h-auto rounded-lg shadow-md my-6 object-cover">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            In the serene, rolling hills of County Kerry, a story unfolded that captivated not just the local farming community, but animal lovers across the internet. It began with a simple, bright red ball – a forgotten toy from a farmer's child, perhaps – and a curious, fluffy Blacknose lamb named Finn.
+                        </p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Finn, barely a few months old, with his characteristic velvety black face and striking white coat, was observed by farmer Liam O'Connell. Liam noticed something unusual during his morning rounds: Finn was nudging the vivid red sphere with his nose, then bouncing it gently with his head, chasing it as it rolled down a slight incline. This wasn't typical sheep behavior. While lambs are known for their playful leaps and bounds, interacting with an inanimate object in such a deliberate, almost "game-like" manner was truly a revelation.
+                        </p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Over the next few days, the red ball became Finn's constant companion. He would gently butt it, follow it through the grass, and even attempt to herd it, much like his mother would guide him. This charming interaction not only highlighted Finn's individual personality but also offered a rare glimpse into the cognitive and emotional depth of these often-underestimated animals. Experts suggest that such play behavior, while uncommon, points to a need for environmental enrichment and can be a sign of a healthy, thriving animal with a low-stress environment.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            This exclusive paid article delves deeper into Finn's story, bringing you behind-the-scenes access to Liam O'Connell's farm. Subscribers will gain access to never-before-seen video footage of Finn's playful antics, an in-depth interview with Liam about his observations and the broader implications for animal welfare, and expert analysis from sheep behaviorists on what Finn's fascination with the red ball teaches us about Blacknose intelligence and well-being.
+                        </p>
+                    </div>
+                    <div class="paywall-message absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center p-4 text-center rounded-lg shadow-inner border border-gray-200">
+                        <h4 class="text-2xl font-bold text-emerald-800 mb-4">Subscribe to Read More!</h4>
+                        <p class="text-gray-700 mb-6">Unlock this full article and exclusive content by becoming a subscriber to The Blacknose Sheep Blog.</p>
+                        <a href="https://buy.stripe.com/9B66oHeqAf0h7E531P" target="_blank" class="block bg-emerald-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105">
+                            Subscribe Now for $11.51/month!
+                        </a>
+                        <button onclick="activateSubscription();" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition duration-300">
+                            Activate Demo Subscription
+                        </button>
+                    </div>
+                </article>
+
+                <article id="sheep-tongue-blog" class="bg-white p-6 md:p-8 rounded-lg shadow-md mb-8 border border-gray-100 relative overflow-hidden">
+                    <h3 class="text-2xl md:text-3xl font-semibold text-emerald-600 mb-4">The Hilarious Tongue-Out Sheep! Unveiling Quirky Blacknose Habits</h3>
+                    <div class="preview-content">
+                        <img src="https://i.imgur.com/nCK4We5.jpeg" alt="Blacknose Sheep with its tongue sticking out" class="w-full h-48 md:h-64 object-cover rounded-lg my-6">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Every now and then, our beautiful Blacknose sheep surprise us with a moment of pure, unadulterated hilarity. One such moment, captured on a sunny afternoon in a field near Limerick, has become an instant classic among our community: a Blacknose sheep, mid-graze, with its tongue playfully poking out!...
+                        </p>
+                    </div>
+                    <div class="full-content hidden">
+                        <img src="https://i.imgur.com/nCK4We5.jpeg" alt="Blacknose Sheep with its tongue sticking out" class="w-full h-auto rounded-lg shadow-md my-6 object-cover">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Every now and then, our beautiful Blacknose sheep surprise us with a moment of pure, unadulterated hilarity. One such moment, captured on a sunny afternoon in a field near Limerick, has become an instant classic among our community: a Blacknose sheep, mid-graze, with its tongue playfully poking out!
+                        </p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            While sheep generally keep their tongues tucked away, occasional tongue-poking, licking, or even "raspberry-blowing" can be observed. These seemingly random acts can be due to a variety of reasons, from simply adjusting their bite on a juicy blade of grass to a brief moment of curiosity or even a slight itch. For Blacknose sheep, with their distinctive black faces and expressions, these quirky moments are even more endearing.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            In this delightful paid exclusive, we dive into the fascinating world of sheep communication and behavior. We'll explore why sheep stick out their tongues, discuss other amusing habits observed in Valais Blacknose flocks across Ireland, and share more candid photos and videos of these sheep in their natural, charmingly awkward moments. Get ready to smile, learn, and fall even more in love with the personalities behind those fluffy white coats and striking black faces!
+                        </p>
+                    </div>
+                    <div class="paywall-message absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center p-4 text-center rounded-lg shadow-inner border border-gray-200">
+                        <h4 class="text-2xl font-bold text-emerald-800 mb-4">Subscribe to Read More!</h4>
+                        <p class="text-gray-700 mb-6">Unlock this full article and exclusive content by becoming a subscriber to The Blacknose Sheep Blog.</p>
+                        <a href="https://buy.stripe.com/9B66oHeqAf0h7E531P" target="_blank" class="block bg-emerald-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105">
+                            Subscribe Now for $11.51/month!
+                        </a>
+                        <button onclick="activateSubscription();" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition duration-300">
+                            Activate Demo Subscription
+                        </button>
+                    </div>
+                </article>
+
+                <p class="text-gray-700 text-lg mb-4 leading-relaxed">
+                    Check back often for more exciting articles and insights into the world of Blacknose Sheep!
+                </p>
+            </section>
+        </div> <div id="forum-page" class="content-section">
+            <section class="bg-white shadow-xl rounded-lg p-6 md:p-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-emerald-700 mb-6">Community Forum</h2>
+
+                <p class="text-gray-600 mb-4">Your User ID: <span id="current-user-id" class="font-bold text-emerald-800">Loading...</span></p>
+
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button id="forum-tab-btn" class="py-2 px-4 text-lg font-medium text-emerald-700 border-b-2 border-emerald-500 hover:text-emerald-800 focus:outline-none">Forum Threads</button>
+                    <button id="pm-tab-btn" class="py-2 px-4 text-lg font-medium text-gray-500 hover:text-gray-700 focus:outline-none">Private Messages</button>
+                </div>
+
+                <div id="forum-threads-section">
+                    <p class="text-gray-700 text-lg mb-4 leading-relaxed">
+                        Welcome to the Blacknose Sheep Blog Community Forum! This is a place for subscribers to connect, share insights, ask questions, and discuss all things related to Blacknose sheep in Ireland.
+                    </p>
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Forum Guidelines:</h4>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>Be respectful and constructive in your discussions.</li>
+                            <li>Share your experiences and knowledge.</li>
+                            <li>No spam or self-promotion.</li>
+                            <li>Keep discussions on-topic about Blacknose sheep.</li>
+                            <li>You can embed memes/GIFs by pasting image URLs directly into your posts!</li>
+                        </ul>
+                    </div>
+
+                    <button id="create-thread-btn" class="bg-emerald-600 text-white font-bold py-3 px-6 rounded-full text-center text-xl shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105 mb-6">
+                        Create New Thread
+                    </button>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">Active Threads:</h4>
+                    <div id="thread-list" class="space-y-4">
+                        <p class="text-gray-500">Loading threads...</p>
+                    </div>
+
+                    <div id="thread-view" class="hidden mt-8 p-6 bg-gray-50 rounded-lg shadow border border-gray-200">
+                        <button id="back-to-threads-btn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-full hover:bg-gray-400 transition duration-300 mb-4">
+                            &larr; Back to Threads
+                        </button>
+                        <h3 id="current-thread-title" class="text-2xl font-bold text-emerald-800 mb-4"></h3>
+                        <div id="thread-posts" class="space-y-4">
+                            </div>
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <h4 class="text-xl font-semibold text-gray-800 mb-3">Add a Comment:</h4>
+                            <textarea id="new-post-content" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 resize-y" rows="4" placeholder="Type your comment here, paste image URLs for memes/GIFs!"></textarea>
+                            <button id="submit-post-btn" class="mt-3 bg-emerald-600 text-white font-bold py-2 px-5 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300">
+                                Post Comment
+                            </button>
+                        </div>
+                    </div>
+                </div> <div id="private-messages-section" class="hidden">
+                    <h3 class="text-2xl md:text-3xl font-bold text-emerald-700 mb-4">Your Private Messages</h3>
+                    <p class="text-gray-700 text-lg mb-4 leading-relaxed">
+                        Send and receive private messages with other forum members using their User IDs.
+                    </p>
+
+                    <button id="compose-pm-btn" class="bg-emerald-600 text-white font-bold py-3 px-6 rounded-full text-center text-xl shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105 mb-6">
+                        Compose New Private Message
+                    </button>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">Received Messages:</h4>
+                    <div id="received-messages-list" class="space-y-4 mb-8">
+                        <p class="text-gray-500">No messages received yet.</p>
+                    </div>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">Sent Messages:</h4>
+                    <div id="sent-messages-list" class="space-y-4">
+                        <p class="text-gray-500">No messages sent yet.</p>
+                    </div>
+                </div> </section>
+        </div> </main>
+
+    <footer class="bg-gray-800 text-white py-6 md:py-8 text-center rounded-t-lg">
+        <div class="container mx-auto px-4">
+            <p class="mb-4">&copy; 2025 The Blacknose Sheep Blog. All rights reserved. Premium Content.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-gray-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-gray-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-gray-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="create-thread-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('create-thread-modal')">&times;</span>
+            <h3 class="text-2xl font-bold text-emerald-700 mb-4">Create New Forum Thread</h3>
+            <label for="new-thread-title" class="block text-gray-700 text-lg font-semibold mb-2">Thread Title:</label>
+            <input type="text" id="new-thread-title" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 mb-4" placeholder="Enter thread title">
+            <label for="initial-post-content" class="block text-gray-700 text-lg font-semibold mb-2">Initial Post:</label>
+            <textarea id="initial-post-content" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 resize-y mb-4" rows="6" placeholder="Write your initial post. Paste image URLs for memes/GIFs!"></textarea>
+            <button id="submit-new-thread-btn" class="bg-emerald-600 text-white font-bold py-2 px-5 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300 w-full">
+                Create Thread
+            </button>
+        </div>
+    </div>
+
+    <div id="compose-pm-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('compose-pm-modal')">&times;</span>
+            <h3 class="text-2xl font-bold text-emerald-700 mb-4">Compose Private Message</h3>
+            <label for="pm-recipient-id" class="block text-gray-700 text-lg font-semibold mb-2">Recipient User ID:</label>
+            <input type="text" id="pm-recipient-id" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 mb-4" placeholder="Enter recipient's User ID">
+            <label for="pm-content" class="block text-gray-700 text-lg font-semibold mb-2">Message:</label>
+            <textarea id="pm-content" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 resize-y mb-4" rows="6" placeholder="Type your private message here..."></textarea>
+            <button id="send-pm-btn" class="bg-emerald-600 text-white font-bold py-2 px-5 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300 w-full">
+                Send Message
+            </button>
+        </div>
+    </div>
+
+    <div id="message-box" class="modal">
+        <div class="modal-content">
+            <p id="message-text" class="text-xl font-semibold text-gray-800 mb-4"></p>
+            <button id="message-ok-button" class="bg-emerald-600 text-white font-bold py-2 px-5 rounded-full shadow-lg hover:bg-emerald-700 transition duration-300">OK</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Global Variables and Functions (accessible from HTML onclick) ---
+        let isSubscribed = false; // Default to false
+
+        function showMessage(text, callback) {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const messageOkButton = document.getElementById('message-ok-button');
+            messageText.textContent = text;
+            messageBox.style.display = 'flex'; // Use flex to center
+            messageOkButton.onclick = () => {
+                messageBox.style.display = 'none';
+                if (callback) callback();
+            };
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Function to simulate subscription activation
+        function activateSubscription() {
+            isSubscribed = true;
+            showMessage("Demo Subscription Activated! You now have full access to all articles.", () => {
+                // If on the blog page, refresh content to show full articles
+                if (document.getElementById('blog-page-content').classList.contains('active')) {
+                    displayBlogContent();
+                }
+                updateSubscribeButton(); // Update header button
+            });
+        }
+
+        // Function to update the subscribe button in the header
+        function updateSubscribeButton() {
+            const subscribeBtn = document.getElementById('subscribe-header-btn');
+            if (isSubscribed) {
+                subscribeBtn.textContent = 'Subscribed (Demo)';
+                subscribeBtn.classList.remove('bg-white', 'text-emerald-700', 'hover:bg-emerald-100');
+                subscribeBtn.classList.add('bg-gray-400', 'text-gray-700', 'cursor-not-allowed', 'opacity-70');
+                subscribeBtn.removeAttribute('target'); // Prevent new tab opening
+                subscribeBtn.onclick = (e) => { e.preventDefault(); showMessage("You are already subscribed in demo mode!", null); };
+            } else {
+                subscribeBtn.textContent = 'Subscribe!';
+                subscribeBtn.classList.remove('bg-gray-400', 'text-gray-700', 'cursor-not-allowed', 'opacity-70');
+                subscribeBtn.classList.add('bg-white', 'text-emerald-700', 'hover:bg-emerald-100');
+                subscribeBtn.setAttribute('target', '_blank');
+                subscribeBtn.onclick = null; // Revert onclick
+            }
+        }
+
+
+        // Function to display blog content based on subscription status
+        function displayBlogContent() {
+            const articles = document.querySelectorAll('#blog-page-content article');
+            articles.forEach(article => {
+                const fullContent = article.querySelector('.full-content');
+                const paywallMessage = article.querySelector('.paywall-message');
+                const previewContent = article.querySelector('.preview-content');
+
+                if (isSubscribed) {
+                    if (fullContent) fullContent.classList.remove('hidden');
+                    if (paywallMessage) paywallMessage.classList.add('hidden');
+                    if (previewContent) previewContent.classList.add('hidden');
+                    // Remove the fade effect class if full content is shown
+                    article.classList.remove('fade-out');
+                } else {
+                    if (fullContent) fullContent.classList.add('hidden');
+                    if (paywallMessage) paywallMessage.classList.remove('hidden');
+                    if (previewContent) previewContent.classList.remove('hidden');
+                    // Add fade effect for non-subscribers
+                    article.classList.add('fade-out');
+                }
+            });
+        }
+
+        // Function to show/hide main content sections (Home/Blog/Forum)
+        function showPage(pageId, scrollToId = null) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0); // Scroll to top when changing page
+
+            if (pageId === 'blog-page-content') {
+                displayBlogContent(); // Call this to apply paywall logic
+                if (scrollToId) {
+                    setTimeout(() => {
+                        const targetElement = document.getElementById(scrollToId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100);
+                }
+            } else if (pageId === 'forum-page') { // Only check for currentUserId and db/auth if navigating to forum
+                // Check if currentUserId is defined and not null, and if Firebase db/auth are initialized
+                if (typeof currentUserId !== 'undefined' && currentUserId !== null && db && auth) {
+                    document.getElementById('forum-tab-btn').click(); // Default to forum threads
+                } else {
+                    // Firebase not yet initialized or user not authenticated, it will initialize and call listeners via onAuthStateChanged
+                    console.log("Firebase not ready for forum, will load when authenticated.");
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Global Variables (provided by Canvas environment)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth, currentUserId;
+
+        // --- Firebase Initialization and Authentication ---
+        async function initFirebaseAndAuth() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        document.getElementById('current-user-id').textContent = currentUserId;
+                        console.log("Authenticated with UID:", currentUserId);
+                        // Once authenticated, start listening for data if forum page is active
+                        if (document.getElementById('forum-page').classList.contains('active')) {
+                             listenForThreads();
+                             listenForPrivateMessages();
+                        }
+                    } else {
+                        console.log("No user signed in. Attempting anonymous sign-in or custom token.");
+                        document.getElementById('current-user-id').textContent = 'Not signed in';
+                        try {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            console.log("Firebase authentication successful.");
+                        } catch (error) {
+                            console.error("Firebase authentication failed:", error); // Changed from showMessage to console.error
+                            // Fallback to a random ID if auth fails entirely (though should be rare in Canvas)
+                            currentUserId = crypto.randomUUID();
+                            document.getElementById('current-user-id').textContent = currentUserId + " (Anonymous)";
+                            console.log("Using anonymous or random user ID:", currentUserId);
+                             if (document.getElementById('forum-page').classList.contains('active')) {
+                                listenForThreads();
+                                listenForPrivateMessages();
+                             }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+            }
+        }
+
+        // --- Utility Functions ---
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'Just now';
+            // Firestore timestamp object has toMillis() or toDate()
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        function isImageUrl(url) {
+            return (url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/) != null);
+        }
+
+        // --- Forum Threads Logic ---
+        const threadListDiv = document.getElementById('thread-list');
+        const threadViewDiv = document.getElementById('thread-view');
+        const currentThreadTitle = document.getElementById('current-thread-title');
+        const threadPostsDiv = document.getElementById('thread-posts');
+
+        let currentThreadId = null; // To keep track of the currently viewed thread
+
+        // Listen for real-time updates to forum threads
+        function listenForThreads() {
+            if (!db) { console.warn("Firestore not initialized for threads."); return; }
+            const threadsCollectionRef = collection(db, `artifacts/${appId}/public/data/forum_threads`);
+            const q = query(threadsCollectionRef, orderBy('createdAt', 'desc')); // Order by creation time
+
+            onSnapshot(q, (snapshot) => {
+                threadListDiv.innerHTML = ''; // Clear existing threads
+                if (snapshot.empty) {
+                    threadListDiv.innerHTML = '<p class="text-gray-500">No threads yet. Be the first to create one!</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const thread = doc.data();
+                    const threadId = doc.id;
+                    const threadItem = document.createElement('div');
+                    threadItem.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-100 forum-thread-item';
+                    threadItem.innerHTML = `
+                        <h5 class="font-bold text-emerald-700 text-lg">${thread.title}</h5>
+                        <p class="text-gray-600 text-sm">Created by: ${thread.creatorName || thread.creatorId} at ${formatTimestamp(thread.createdAt)}</p>
+                    `;
+                    threadItem.addEventListener('click', () => viewThread(threadId, thread.title));
+                    threadListDiv.appendChild(threadItem);
+                });
+            }, (error) => {
+                console.error("Error listening for threads:", error);
+                threadListDiv.innerHTML = '<p class="text-red-500">Error loading threads. Please try again.</p>';
+            });
+        }
+
+        // View a specific thread
+        async function viewThread(threadId, title) {
+            currentThreadId = threadId;
+            currentThreadTitle.textContent = title;
+            document.getElementById('forum-threads-section').classList.add('hidden');
+            threadViewDiv.classList.remove('hidden');
+            listenForPosts(threadId); // Start listening for posts in this thread
+        }
+
+        // Listen for real-time updates to posts within a thread
+        function listenForPosts(threadId) {
+            if (!db) { console.warn("Firestore not initialized for posts."); return; }
+            const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/forum_threads/${threadId}/posts`);
+            const q = query(postsCollectionRef, orderBy('createdAt', 'asc')); // Order posts chronologically
+
+            onSnapshot(q, (snapshot) => {
+                threadPostsDiv.innerHTML = ''; // Clear existing posts
+                if (snapshot.empty) {
+                    threadPostsDiv.innerHTML = '<p class="text-gray-500">No posts in this thread yet. Be the first to comment!</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    const postElement = document.createElement('div');
+                    postElement.className = 'bg-white p-4 rounded-lg shadow border border-gray-100';
+
+                    let contentHtml = `<p class="text-gray-800 mb-2">${post.content}</p>`;
+                    // Check if content is an image URL (simple check) for memes/GIFs
+                    if (isImageUrl(post.content)) {
+                        contentHtml = `<img src="${post.content}" alt="Meme/GIF" class="max-w-full h-auto rounded-lg my-2" onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/333333?text=Image+Load+Error';"><p class="text-gray-800 mb-2">${post.content}</p>`;
+                    }
+
+                    postElement.innerHTML = `
+                        <p class="font-medium text-emerald-700">${post.userName || post.userId} <span class="text-gray-500 text-sm">at ${formatTimestamp(post.createdAt)}</span></p>
+                        ${contentHtml}
+                    `;
+                    threadPostsDiv.appendChild(postElement);
+                });
+                threadPostsDiv.scrollTop = threadPostsDiv.scrollHeight; // Scroll to bottom
+            }, (error) => {
+                console.error("Error listening for posts:", error);
+                threadPostsDiv.innerHTML = '<p class="text-red-500">Error loading posts. Please try again.</p>';
+            });
+        }
+
+        // Add a new thread
+        async function addNewThread() {
+            if (!currentUserId) {
+                console.error("User not authenticated.");
+                showMessage("You must be signed in to create a thread.", null);
+                return;
+            }
+            if (!db) { console.warn("Firestore not initialized."); showMessage("Database not ready.", null); return; }
+
+
+            const title = document.getElementById('new-thread-title').value.trim();
+            const initialPostContent = document.getElementById('initial-post-content').value.trim();
+
+            if (!title || !initialPostContent) {
+                showMessage("Please enter both a title and initial post content.", null);
+                return;
+            }
+
+            try {
+                const threadsCollectionRef = collection(db, `artifacts/${appId}/public/data/forum_threads`);
+                const newThreadRef = await addDoc(threadsCollectionRef, {
+                    title: title,
+                    creatorId: currentUserId,
+                    creatorName: currentUserId, // Using UID as name for simplicity
+                    createdAt: serverTimestamp()
+                });
+
+                // Add the initial post to the new thread
+                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/forum_threads/${newThreadRef.id}/posts`);
+                await addDoc(postsCollectionRef, {
+                    userId: currentUserId,
+                    userName: currentUserId,
+                    content: initialPostContent,
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('new-thread-title').value = '';
+                document.getElementById('initial-post-content').value = '';
+                closeModal('create-thread-modal');
+                showMessage("Thread created successfully!", null);
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showMessage("Error creating thread. Please try again.", null);
+            }
+        }
+
+        // Add a new post to the current thread
+        async function addNewPost() {
+            if (!currentUserId || !currentThreadId) {
+                console.error("User not authenticated or no thread selected.");
+                showMessage("Please sign in and select a thread to post.", null);
+                return;
+            }
+            if (!db) { console.warn("Firestore not initialized."); showMessage("Database not ready.", null); return; }
+
+
+            const postContent = document.getElementById('new-post-content').value.trim();
+            if (!postContent) {
+                showMessage("Please enter content for your post.", null);
+                return;
+            }
+
+            try {
+                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/forum_threads/${currentThreadId}/posts`);
+                await addDoc(postsCollectionRef, {
+                    userId: currentUserId,
+                    userName: currentUserId,
+                    content: postContent,
+                    createdAt: serverTimestamp()
+                });
+                document.getElementById('new-post-content').value = ''; // Clear textarea
+            } catch (e) {
+                console.error("Error adding post: ", e);
+                showMessage("Error adding post. Please try again.", null);
+            }
+        }
+
+        // --- Private Messaging Logic ---
+        const receivedMessagesList = document.getElementById('received-messages-list');
+        const sentMessagesList = document.getElementById('sent-messages-list');
+
+        // Listen for real-time updates to private messages
+        function listenForPrivateMessages() {
+            if (!currentUserId) {
+                receivedMessagesList.innerHTML = '<p class="text-gray-500">Sign in to view private messages.</p>';
+                sentMessagesList.innerHTML = '<p class="text-gray-500">Sign in to view private messages.</p>';
+                return;
+            }
+            if (!db) { console.warn("Firestore not initialized for messages."); return; }
+
+
+            // Listen for RECEIVED messages
+            const receivedPmCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/private_messages`);
+            const qReceived = query(receivedPmCollectionRef, orderBy('createdAt', 'desc'));
+
+            onSnapshot(qReceived, (snapshot) => {
+                receivedMessagesList.innerHTML = '';
+                if (snapshot.empty) {
+                    receivedMessagesList.innerHTML = '<p class="text-gray-500">No messages received yet.</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const message = doc.data();
+                    if (message.receiverId === currentUserId) { // Ensure it's for current user
+                        const msgElement = document.createElement('div');
+                        msgElement.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-100 pm-item';
+                        msgElement.innerHTML = `
+                            <p class="font-medium text-emerald-700">From: ${message.senderId} <span class="text-gray-500 text-sm">at ${formatTimestamp(message.createdAt)}</span></p>
+                            <p class="text-gray-800">${message.content}</p>
+                        `;
+                        receivedMessagesList.appendChild(msgElement);
+                    }
+                });
+            }, (error) => {
+                console.error("Error listening for received private messages:", error);
+                receivedMessagesList.innerHTML = '<p class="text-red-500">Error loading received messages.</p>';
+            });
+
+            // Listen for SENT messages (requires a different query if senderId is used as collection path)
+            // For now, will retrieve all messages and filter by senderId, less efficient but works with current rules
+            // Ideally, sent messages would be stored under sender's path or a 'sent' subcollection
+            const sentPmCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/private_messages`);
+            const qSent = query(sentPmCollectionRef, orderBy('createdAt', 'desc'));
+
+            onSnapshot(qSent, (snapshot) => {
+                sentMessagesList.innerHTML = '';
+                if (snapshot.empty) {
+                    sentMessagesList.innerHTML = '<p class="text-gray-500">No messages sent yet.</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const message = doc.data();
+                    if (message.senderId === currentUserId) { // Ensure it's sent by current user
+                        const msgElement = document.createElement('div');
+                        msgElement.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-100 pm-item';
+                        msgElement.innerHTML = `
+                            <p class="font-medium text-emerald-700">To: ${message.receiverId} <span class="text-gray-500 text-sm">at ${formatTimestamp(message.createdAt)}</span></p>
+                            <p class="text-gray-800">${message.content}</p>
+                        `;
+                        sentMessagesList.appendChild(msgElement);
+                    }
+                });
+            }, (error) => {
+                console.error("Error listening for sent private messages:", error);
+                sentMessagesList.innerHTML = '<p class="text-red-500">Error loading sent messages.</p>';
+            });
+        }
+
+
+        // Send a private message
+        async function sendPrivateMessage() {
+            if (!currentUserId) {
+                showMessage("You must be signed in to send private messages.", null);
+                return;
+            }
+            if (!db) { console.warn("Firestore not initialized."); showMessage("Database not ready.", null); return; }
+
+
+            const recipientId = document.getElementById('pm-recipient-id').value.trim();
+            const messageContent = document.getElementById('pm-content').value.trim();
+
+            if (!recipientId || !messageContent) {
+                showMessage("Please enter a recipient ID and message content.", null);
+                return;
+            }
+
+            if (recipientId === currentUserId) {
+                showMessage("You cannot send a private message to yourself.", null);
+                return;
+            }
+
+            try {
+                // Store message in sender's outbox (private collection for sent messages)
+                const senderPmRef = collection(db, `artifacts/${appId}/users/${currentUserId}/private_messages`);
+                await addDoc(senderPmRef, {
+                    senderId: currentUserId,
+                    receiverId: recipientId,
+                    content: messageContent,
+                    createdAt: serverTimestamp()
+                });
+
+                // Store message in recipient's inbox (private collection for received messages)
+                const receiverPmRef = collection(db, `artifacts/${appId}/users/${recipientId}/private_messages`);
+                await addDoc(receiverPmRef, {
+                    senderId: currentUserId,
+                    receiverId: recipientId,
+                    content: messageContent,
+                    createdAt: serverTimestamp()
+                });
+
+
+                document.getElementById('pm-recipient-id').value = '';
+                document.getElementById('pm-content').value = '';
+                closeModal('compose-pm-modal');
+                showMessage("Message sent successfully!", null);
+            } catch (e) {
+                console.error("Error sending private message: ", e);
+                showMessage("Error sending message. Please ensure the recipient ID is valid and try again.", null);
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initFirebaseAndAuth(); // Initialize Firebase and Auth first
+            showPage('home-page-content'); // Show home page initially
+            updateSubscribeButton(); // Initialize subscribe button state
+
+            // Forum Tab / PM Tab switching
+            document.getElementById('forum-tab-btn').addEventListener('click', () => {
+                document.getElementById('forum-threads-section').classList.remove('hidden');
+                document.getElementById('private-messages-section').classList.add('hidden');
+                document.getElementById('forum-tab-btn').classList.add('border-emerald-500', 'text-emerald-700');
+                document.getElementById('forum-tab-btn').classList.remove('border-gray-200', 'text-gray-500');
+                document.getElementById('pm-tab-btn').classList.remove('border-emerald-500', 'text-emerald-700');
+                document.getElementById('pm-tab-btn').classList.add('border-gray-200', 'text-gray-500');
+                if (db) { listenForThreads(); } // Only call if db is ready
+            });
+
+            document.getElementById('pm-tab-btn').addEventListener('click', () => {
+                document.getElementById('forum-threads-section').classList.add('hidden');
+                document.getElementById('private-messages-section').classList.remove('hidden');
+                document.getElementById('pm-tab-btn').classList.add('border-emerald-500', 'text-emerald-700');
+                document.getElementById('pm-tab-btn').classList.remove('border-gray-200', 'text-gray-500');
+                document.getElementById('forum-tab-btn').classList.remove('border-emerald-500', 'text-emerald-700');
+                document.getElementById('forum-tab-btn').classList.add('border-gray-200', 'text-gray-500');
+                if (db) { listenForPrivateMessages(); } // Only call if db is ready
+            });
+
+            // Forum Button Actions
+            document.getElementById('create-thread-btn').addEventListener('click', () => openModal('create-thread-modal'));
+            document.getElementById('submit-new-thread-btn').addEventListener('click', addNewThread);
+            document.getElementById('submit-post-btn').addEventListener('click', addNewPost);
+            document.getElementById('back-to-threads-btn').addEventListener('click', () => {
+                threadViewDiv.classList.add('hidden');
+                document.getElementById('forum-threads-section').classList.remove('hidden');
+                currentThreadId = null; // Clear current thread selection
+            });
+
+            // Private Message Button Actions
+            document.getElementById('compose-pm-btn').addEventListener('click', () => openModal('compose-pm-modal'));
+            document.getElementById('send-pm-btn').addEventListener('click', sendPrivateMessage);
+        });
+
+    </script>
+</body>
+</html>
