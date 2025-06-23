@@ -115,6 +115,13 @@
             </nav>
         </div>
     </header>
+    <div id="login-section">
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="Password">
+  <button id="login-btn">Sign In</button>
+  <button id="signup-btn">Sign Up</button>
+  <div id="login-error" style="color:red"></div>
+</div>
 
     <main class="container mx-auto px-4 py-8 md:py-12">
 
@@ -497,6 +504,29 @@
             }
         }
     </script>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7IQrL9RhrZ7Bd4BchVcJYX6luDccar5I",
+    authDomain: "blacksheep-acdbf.firebaseapp.com",
+    projectId: "blacksheep-acdbf",
+    storageBucket: "blacksheep-acdbf.firebasestorage.app",
+    messagingSenderId: "262701368143",
+    appId: "1:262701368143:web:98c94f3dea0ed4046c7b3a",
+    measurementId: "G-W9CR759MBK"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
